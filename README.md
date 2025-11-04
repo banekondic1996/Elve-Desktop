@@ -1,4 +1,4 @@
-# <img src="elvelogo.png" height="48px" width="auto"> Elve desktop
+# <img src="https://github.com/banekondic1996/Elve-Desktop/blob/dev/elvelogo.png?raw=true" height="48px" width="auto"> Elve desktop
 **Elve - Desktop enviroment** for Windows and Linux (NOT VIBE CODED!..Well not yet..)</br></br>
 Who the f' is cloning this? I haven't put all the files, like package.json back then... </br></br>
 **Why I'm i making this?** </br>
