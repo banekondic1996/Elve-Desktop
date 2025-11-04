@@ -5,7 +5,9 @@ Who the f' is cloning this? I haven't put all the files, like package.json back 
 Well project started the day i switched to Windows 11 and it was missing small taskbar option, </br>
 then i used StartItAllBack, but Microhard decided to ban that app and many other things related to updates, </br>
 i switched to Linux and started converting it to work on Linux, which i though would be easy, but it's not, </br>
-Firstly Win32 api is much easier to use, then fighting Wayland and writing own compositor for linux
+Firstly Win32 api is much easier to use, then fighting Wayland and writing own compositor for linux. <br>
+Now on Linux i use KDE, it's not bad, but i believe i can make it better. <br>
+And based on what i already have it does look better.
 </br>
 
 **Important!** You have to download nw.js SDK and put it into "/node_modules/nw", otherwise app will crash trying to open dev tools
