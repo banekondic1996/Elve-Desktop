@@ -1,6 +1,13 @@
 # <img src="elvelogo.png" height="48px" width="auto"> Elve desktop
 **Elve - Desktop enviroment** for Windows and Linux (NOT VIBE CODED!..Well not yet..)</br></br>
-Who the f' is cloning this? I haven't put all the files, like package.json back then... Now i have </br></br>
+Who the f' is cloning this? I haven't put all the files, like package.json back then... </br></br>
+**Why I'm i making this?** </br>
+Well project started the day i switched to Windows 11 and it was missing small taskbar option, </br>
+then i used StartItAllBack, but Microhard decided to ban that app and many other things related to updates, </br>
+i switched to Linux and started converting it to work on Linux, which i though would be easy, but it's not, </br>
+Firstly Win32 api is much easier to use, then fighting Wayland and writing own compositor for linux
+</br>
+
 **Important!** You have to download nw.js SDK and put it into "/node_modules/nw", otherwise app will crash trying to open dev tools
 
 
