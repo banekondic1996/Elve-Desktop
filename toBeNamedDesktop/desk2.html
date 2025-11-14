@@ -1,0 +1,438 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Desktop</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+            background: url('imgT.jpg') no-repeat center center;
+            background-size: cover;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        }
+        #select {
+            display: none;
+            background: rgba(74, 158, 255, 0.3);
+            border: 1px solid rgba(74, 158, 255, 0.8);
+            position: absolute;
+            border-radius: 4px;
+            pointer-events: none;
+        }
+        .desktopGrid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, 80px);
+            grid-auto-rows: 90px;
+            gap: 10px;
+            padding: 20px;
+            height: calc(100vh - 80px);
+        }
+        .desktopIcon {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 8px;
+            border-radius: 8px;
+            cursor: pointer;
+            user-select: none;
+            position: relative;
+        }
+        .desktopIcon:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+        .desktopIcon.selected {
+            background: rgba(74, 158, 255, 0.4);
+        }
+        .desktopIcon img {
+            width: 48px;
+            height: 48px;
+            object-fit: contain;
+            pointer-events: none;
+        }
+        .desktopIcon span {
+            margin-top: 4px;
+            color: white;
+            font-size: 12px;
+            text-align: center;
+            text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.8);
+            word-wrap: break-word;
+            max-width: 70px;
+            pointer-events: none;
+        }
+
+        .contextMenu {
+            display: none;
+            position: fixed;
+            background: rgba(40, 40, 40, 0.95);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 8px;
+            padding: 5px 0;
+            min-width: 180px;
+            z-index: 10000;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+        }
+        .contextMenu.show {
+            display: block;
+        }
+        .contextMenuItem {
+            padding: 10px 15px;
+            color: white;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 14px;
+        }
+        .contextMenuItem:hover {
+            background: rgba(255, 255, 255, 0.1);
+        }
+        .contextMenuItem.separator {
+            height: 1px;
+            background: rgba(255, 255, 255, 0.1);
+            margin: 5px 0;
+            padding: 0;
+            cursor: default;
+        }
+        .contextMenuItem.separator:hover {
+            background: rgba(255, 255, 255, 0.1);
+        }
+    </style>
+</head>
+<body>
+    <div id="select"></div>
+    <div class="desktopGrid" id="desktopGrid"></div>
+
+    <!-- Desktop context menu -->
+    <div class="contextMenu" id="desktopContextMenu">
+        <div class="contextMenuItem" onclick="createNew('folder')">📁 New Folder</div>
+        <div class="contextMenuItem" onclick="createNew('file')">📄 New File</div>
+        <div class="contextMenuItem separator"></div>
+        <div class="contextMenuItem" onclick="paste()">📋 Paste</div>
+        <div class="contextMenuItem separator"></div>
+        <div class="contextMenuItem" onclick="refresh()">🔄 Refresh</div>
+        <div class="contextMenuItem" onclick="openSettings()">⚙️ Settings</div>
+    </div>
+
+    <!-- Icon context menu -->
+    <div class="contextMenu" id="iconContextMenu">
+        <div class="contextMenuItem" onclick="openIcon()">📂 Open</div>
+        <div class="contextMenuItem separator"></div>
+        <div class="contextMenuItem" onclick="copyIcon()">📋 Copy</div>
+        <div class="contextMenuItem" onclick="cutIcon()">✂️ Cut</div>
+        <div class="contextMenuItem" onclick="deleteIcon()">🗑️ Delete</div>
+        <div class="contextMenuItem" onclick="renameIcon()">✏️ Rename</div>
+        <div class="contextMenuItem separator"></div>
+        <div class="contextMenuItem" onclick="compressIcon()">📦 Compress</div>
+        <div class="contextMenuItem" onclick="propertiesIcon()">ℹ️ Properties</div>
+    </div>
+
+    <script>
+        const fs = require('fs');
+        const path = require('path');
+        const { exec } = require('child_process');
+
+        const desktopPath = path.join(process.env.HOME, 'Desktop');
+        let selectedIcon = null;
+        let clipboard = null;
+        let clipboardAction = null;
+        let isSelecting = false;
+        let selectStart = { x: 0, y: 0 };
+
+        // Load desktop icons
+        function loadDesktopIcons() {
+            const grid = document.getElementById('desktopGrid');
+            grid.innerHTML = '';
+
+            if (!fs.existsSync(desktopPath)) {
+                fs.mkdirSync(desktopPath);
+            }
+
+            const files = fs.readdirSync(desktopPath);
+            files.forEach(file => {
+                const fullPath = path.join(desktopPath, file);
+                const stats = fs.statSync(fullPath);
+
+                const icon = document.createElement('div');
+                icon.className = 'desktopIcon';
+                icon.dataset.path = fullPath;
+                icon.dataset.name = file;
+
+                let iconImg = '📄';
+                if (stats.isDirectory()) iconImg = '📁';
+                else if (file.endsWith('.png') || file.endsWith('.jpg')) iconImg = '🖼️';
+                else if (file.endsWith('.txt')) iconImg = '📝';
+                else if (file.endsWith('.pdf')) iconImg = '📕';
+
+                icon.innerHTML = `
+                    <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Ctext x='50%25' y='50%25' dominant-baseline='middle' text-anchor='middle' font-size='20'%3E${iconImg}%3C/text%3E%3C/svg%3E">
+                    <span>${file}</span>
+                `;
+
+                icon.addEventListener('click', selectIconHandler);
+                icon.addEventListener('dblclick', () => openFile(fullPath));
+                icon.addEventListener('contextmenu', showIconContextMenu);
+
+                grid.appendChild(icon);
+            });
+        }
+
+        // Selection handling
+        function selectIconHandler(e) {
+            if (!e.target.classList.contains('desktopIcon')) return;
+
+            e.stopPropagation();
+
+            if (!e.ctrlKey && !e.metaKey) {
+                document.querySelectorAll('.desktopIcon.selected').forEach(i => i.classList.remove('selected'));
+            }
+
+            e.target.classList.toggle('selected');
+            selectedIcon = e.target;
+        }
+
+        // Drag selection
+        document.addEventListener('mousedown', (e) => {
+            if (e.target.classList.contains('desktopIcon')) return;
+
+            isSelecting = true;
+            selectStart = { x: e.clientX, y: e.clientY };
+
+            const select = document.getElementById('select');
+            select.style.display = 'block';
+            select.style.left = e.clientX + 'px';
+            select.style.top = e.clientY + 'px';
+            select.style.width = '0px';
+            select.style.height = '0px';
+
+            // Clear selection
+            document.querySelectorAll('.desktopIcon.selected').forEach(i => i.classList.remove('selected'));
+        });
+
+        document.addEventListener('mousemove', (e) => {
+            if (!isSelecting) return;
+
+            const select = document.getElementById('select');
+            const width = Math.abs(e.clientX - selectStart.x);
+            const height = Math.abs(e.clientY - selectStart.y);
+            const left = Math.min(e.clientX, selectStart.x);
+            const top = Math.min(e.clientY, selectStart.y);
+
+            select.style.width = width + 'px';
+            select.style.height = height + 'px';
+            select.style.left = left + 'px';
+            select.style.top = top + 'px';
+
+            // Select icons in range
+            const selectRect = select.getBoundingClientRect();
+            document.querySelectorAll('.desktopIcon').forEach(icon => {
+                const iconRect = icon.getBoundingClientRect();
+                const overlap = !(iconRect.right < selectRect.left ||
+                                iconRect.left > selectRect.right ||
+                                iconRect.bottom < selectRect.top ||
+                                iconRect.top > selectRect.bottom);
+
+                if (overlap) {
+                    icon.classList.add('selected');
+                } else {
+                    icon.classList.remove('selected');
+                }
+            });
+        });
+
+        document.addEventListener('mouseup', () => {
+            if (isSelecting) {
+                document.getElementById('select').style.display = 'none';
+                isSelecting = false;
+            }
+        });
+
+        // Context menus
+        function showIconContextMenu(e) {
+            e.preventDefault();
+            e.stopPropagation();
+
+            hideAllContextMenus();
+
+            if (!e.target.classList.contains('selected')) {
+                document.querySelectorAll('.desktopIcon.selected').forEach(i => i.classList.remove('selected'));
+                e.target.classList.add('selected');
+            }
+
+            selectedIcon = e.target;
+            const menu = document.getElementById('iconContextMenu');
+            positionContextMenu(menu, e.clientX, e.clientY);
+        }
+
+        document.addEventListener('contextmenu', (e) => {
+            if (e.target.classList.contains('desktopIcon')) return;
+
+            e.preventDefault();
+            hideAllContextMenus();
+
+            const menu = document.getElementById('desktopContextMenu');
+            positionContextMenu(menu, e.clientX, e.clientY);
+        });
+
+        function positionContextMenu(menu, x, y) {
+            menu.style.left = x + 'px';
+            menu.style.top = y + 'px';
+            menu.classList.add('show');
+
+            // Adjust if off screen
+            setTimeout(() => {
+                const rect = menu.getBoundingClientRect();
+                if (rect.right > window.innerWidth) {
+                    menu.style.left = (x - rect.width) + 'px';
+                }
+                if (rect.bottom > window.innerHeight) {
+                    menu.style.top = (y - rect.height) + 'px';
+                }
+            }, 0);
+        }
+
+        function hideAllContextMenus() {
+            document.querySelectorAll('.contextMenu').forEach(m => m.classList.remove('show'));
+        }
+
+        document.addEventListener('click', hideAllContextMenus);
+
+        // Icon actions
+        function openIcon() {
+            const selected = document.querySelectorAll('.desktopIcon.selected');
+            selected.forEach(icon => {
+                openFile(icon.dataset.path);
+            });
+            hideAllContextMenus();
+        }
+
+        function openFile(filePath) {
+            exec(`xdg-open "${filePath}"`, (error) => {
+                if (error) console.error('Error opening file:', error);
+            });
+        }
+
+        function copyIcon() {
+            clipboard = Array.from(document.querySelectorAll('.desktopIcon.selected')).map(i => i.dataset.path);
+            clipboardAction = 'copy';
+            hideAllContextMenus();
+        }
+
+        function cutIcon() {
+            clipboard = Array.from(document.querySelectorAll('.desktopIcon.selected')).map(i => i.dataset.path);
+            clipboardAction = 'cut';
+            hideAllContextMenus();
+        }
+
+        function deleteIcon() {
+            const selected = document.querySelectorAll('.desktopIcon.selected');
+            if (!confirm(`Delete ${selected.length} item(s)?`)) return;
+
+            selected.forEach(icon => {
+                exec(`gio trash "${icon.dataset.path}"`, (error) => {
+                    if (error) {
+                        fs.unlinkSync(icon.dataset.path);
+                    }
+                    loadDesktopIcons();
+                });
+            });
+            hideAllContextMenus();
+        }
+
+        function renameIcon() {
+            if (!selectedIcon) return;
+
+            const newName = prompt('New name:', selectedIcon.dataset.name);
+            if (!newName || newName === selectedIcon.dataset.name) return;
+
+            const oldPath = selectedIcon.dataset.path;
+            const newPath = path.join(path.dirname(oldPath), newName);
+
+            fs.renameSync(oldPath, newPath);
+            loadDesktopIcons();
+            hideAllContextMenus();
+        }
+
+        function compressIcon() {
+            const selected = document.querySelectorAll('.desktopIcon.selected');
+            if (selected.length === 0) return;
+
+            const files = Array.from(selected).map(i => `"${i.dataset.path}"`).join(' ');
+            const archiveName = `archive_${Date.now()}.tar.gz`;
+
+            exec(`tar -czf "${path.join(desktopPath, archiveName)}" ${files}`, (error) => {
+                if (error) console.error('Error compressing:', error);
+                else loadDesktopIcons();
+            });
+            hideAllContextMenus();
+        }
+
+        function propertiesIcon() {
+            if (!selectedIcon) return;
+
+            const stats = fs.statSync(selectedIcon.dataset.path);
+            alert(`Name: ${selectedIcon.dataset.name}\nSize: ${stats.size} bytes\nModified: ${stats.mtime}`);
+            hideAllContextMenus();
+        }
+
+        // Desktop actions
+        function createNew(type) {
+            const name = prompt(`New ${type} name:`);
+            if (!name) return;
+
+            const newPath = path.join(desktopPath, name);
+
+            if (type === 'folder') {
+                fs.mkdirSync(newPath);
+            } else {
+                fs.writeFileSync(newPath, '');
+            }
+
+            loadDesktopIcons();
+            hideAllContextMenus();
+        }
+
+        function paste() {
+            if (!clipboard || clipboard.length === 0) return;
+
+            clipboard.forEach(srcPath => {
+                const fileName = path.basename(srcPath);
+                const destPath = path.join(desktopPath, fileName);
+
+                if (clipboardAction === 'copy') {
+                    fs.copyFileSync(srcPath, destPath);
+                } else if (clipboardAction === 'cut') {
+                    fs.renameSync(srcPath, destPath);
+                }
+            });
+
+            if (clipboardAction === 'cut') {
+                clipboard = null;
+                clipboardAction = null;
+            }
+
+            loadDesktopIcons();
+            hideAllContextMenus();
+        }
+
+        function refresh() {
+            loadDesktopIcons();
+            hideAllContextMenus();
+        }
+
+        function openSettings() {
+            exec('gnome-control-center || systemsettings5');
+            hideAllContextMenus();
+        }
+
+        // Initialize
+        loadDesktopIcons();
+    </script>
+</body>
+</html>

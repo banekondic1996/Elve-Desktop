@@ -1,0 +1,607 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>top</title>
+    <style>
+        *{
+            /* pointer-events: none; */
+            /* background:none; */
+            /* background: gray; */
+        }
+        body
+        {
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+            background: none;
+            padding: 1px;
+            display: flex;
+            place-content: center;
+            flex-direction: row;
+            width: 100%;
+            height: 100%;
+        }
+        #barID
+        {
+            max-height: 100px;
+            min-height: 22px;
+            display: flex;
+            width: 96%;
+            height: 32px;
+            background: rgba(5, 5, 5, 0.35);
+            position: absolute;
+            align-items: center;
+            border-radius: 18px;
+            padding-inline: 1%;
+            user-select: none;
+            backdrop-filter: blur(2px);
+            margin: auto;
+            bottom: 75px;
+            margin-right:1px;
+        }
+        #iconTask
+        {
+            height:auto;
+            width:22px;
+            margin-left: 6px;
+        }
+       .taskbutton{
+            margin-inline-end: 5px;
+            height: 50%;
+            aspect-ratio: 1/1;
+            background: #00000021;
+            border-radius: 100%;
+            padding: 3px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .taskbutton:hover
+        {
+            background: #00000037;
+        }
+        .taskbutton img {
+            height: 100%;
+            width: 100%;
+        }
+        #barResizeID
+        {
+            background: rgba(0, 0, 0, 0.01);
+            display: flex;
+            width: 96%;
+            height: 40px;
+            position: absolute;
+            align-items: center;
+            bottom: 75px;
+            border-radius: 18px;
+            overflow: hidden;
+            padding-inline: 1%;
+            cursor:n-resize;
+            margin:0px;
+        }
+        #barClockID
+        {
+            display: flex;
+            height: 40%;
+            border-radius: 24px;
+            padding: 4px;
+            padding-inline: 10px;
+            font-size: 14px;
+            align-items: center;
+        }
+        #barAppsID {
+            display: flex;
+            align-items: center;
+            margin: auto;
+            height: 100%;
+        }
+        #trayIconsID{
+            display: flex;
+            height: 40%;
+            width: auto;
+            margin-right: 5px;
+            border-radius: 24px;
+            padding: 4px;
+            padding-inline: 10px;
+            font-size: 14px;
+            align-items: center;
+        }
+        .tray-icon {
+            width: 20px;
+            height: 20px;
+            margin: 0 2px;
+        }
+        .color{
+            background:rgba(176,176,176,0.60);
+        }
+        .darkMode{
+            filter:invert();
+        }
+
+        /* Popups */
+        .popup-container {
+            position: fixed;
+            background: rgb(0 0 0 / 64%);
+            border-radius: 14px;
+            contain: content;
+            display: none;
+            flex-direction: column;
+            cursor: auto;
+            user-select: none;
+            border: 4px solid #96969680;
+            z-index: 10000;
+        }
+        .popup-container.show {
+            display: flex;
+        }
+
+        /* App Menu */
+        #appMenuContainerID {
+            width: 472px;
+            height: 420px;
+        }
+        #appMenuID{
+            display: flex;
+            height: 100%;
+            width: 100%;
+            flex-wrap: wrap;
+            position: relative;
+            flex-direction: row;
+            gap: 14px;
+            overflow: hidden;
+            justify-content: flex-start;
+            padding: 13px;
+        }
+        .appMenuIconContainer{
+            contain: content;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin: 2px;
+            height: 82px;
+            width: 62px;
+            padding: 5px;
+            text-align: center;
+            text-shadow: 1px 1px 6px #606060ab;
+            user-select: none;
+            color: white;
+        }
+        .appMenuIconContainer:hover{
+            background: #5b5b5b;
+            border-radius: 14px;
+        }
+        .appMenuIcon{
+            width: 48px;
+            height: 48px;
+        }
+
+        /* Calendar */
+        #calendarID {
+            width: 311px;
+            height: 460px;
+            padding: 20px;
+            color: white;
+        }
+
+        /* Control Center */
+        #controlCenterID {
+            width: 350px;
+            height: 410px;
+            padding: 15px;
+        }
+        .controlCenterButton{
+            display: flex;
+            background: rgb(248 125 166 / 44%);
+            border-radius: 12px;
+            width: 90px;
+            height: 60px;
+            margin: 10px;
+            text-align: center;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+            cursor: pointer;
+        }
+        .controlCenterButton img{
+            width: auto;
+            height: 22px;
+            opacity: 0.5;
+        }
+        .controlCenterButton:hover {
+            background: rgb(248 125 166 / 60%);
+        }
+        .flexContainer{
+            display: flex;
+            flex-direction: row;
+            flex-wrap: wrap;
+            padding: 24px;
+            justify-content: space-between;
+        }
+        .sliderContainer{
+            text-align: center;
+            margin: 10px 0;
+        }
+        .slider {
+            -webkit-appearance: none;
+            width: 70%;
+            height: 20px;
+            background: #979797;
+            outline: none;
+            margin: 10px;
+            border-radius: 10px;
+        }
+        .slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 15px;
+            height: 15px;
+            background: #ff80db;
+            cursor: pointer;
+            border-radius: 100%;
+        }
+        .sliderContainer img{
+            width: 22px;
+            height: 22px;
+            opacity: 0.5;
+        }
+        .wifi-section {
+            display: none;
+            padding: 10px;
+            max-height: 200px;
+            overflow-y: auto;
+        }
+        .wifi-section.show {
+            display: block;
+        }
+        .wifi-item {
+            padding: 8px;
+            background: rgba(255, 255, 255, 0.1);
+            margin: 5px 0;
+            border-radius: 6px;
+            cursor: pointer;
+            color: white;
+            display: flex;
+            justify-content: space-between;
+        }
+        .wifi-item:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+        .wifi-item.connected {
+            background: rgba(100, 200, 100, 0.3);
+        }
+        .trayContainer{
+            display: flex;
+            width: 100%;
+            height: 40px;
+            background:rgb(113 113 113 / 58%);
+            border-radius: 0px 0px 10px 10px;
+            margin-top: 10px;
+            padding: 5px;
+            gap: 5px;
+            overflow-x: auto;
+        }
+        .indicator{
+            background: #00ff03;
+            width: 7px;
+            height: 7px;
+            border-radius: 100%;
+            position: absolute;
+            box-shadow: 0px 0px 3px 1px black;
+            opacity: 0.8;
+        }
+        .indicatorTrue{
+            background: #00ff03;
+        }
+        .indicatorFalse{
+            background: #ff0000;
+        }
+    </style>
+</head>
+<body>
+<div id="barResizeID"></div>
+<div id="barID" class="colorBackground">
+    <div id="trayIconsID" class="color darkMode"></div>
+    <img class='taskbutton color darkMode' src="/icons/toggle.png" onclick="openPopupAtClick(event, 'controlCenterID')">
+    <div id="barAppsID">
+        <div class='taskbutton color darkMode' onclick="openPopupAtClick(event, 'appMenuContainerID')">
+            <img src="/icons/apps.png" class="darkMode">
+        </div>
+    </div>
+    <div id="barClockID" class="color darkMode" onclick="openPopupAtClick(event, 'calendarID')"></div>
+</div>
+
+<!-- App Menu -->
+<div id="appMenuContainerID" class="popup-container">
+    <div id="appMenuID"></div>
+</div>
+
+<!-- Calendar -->
+<div id="calendarID" class="popup-container"></div>
+
+<!-- Control Center -->
+<div id="controlCenterID" class="popup-container">
+    <div class="flexContainer">
+        <div class="controlCenterButton color" onclick="toggleWifi()">
+            <div class="indicator indicatorFalse" style="left: 77px;bottom: 5px;" id="wifiIndicator"></div>
+            <img src='data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"%3E%3Cpath d="M1 9l2 2c4.97-4.97 13.03-4.97 18 0l2-2C16.93 2.93 7.08 2.93 1 9zm8 8l3 3 3-3c-1.65-1.66-4.34-1.66-6 0zm-4-4l2 2c2.76-2.76 7.24-7.24 10 0l2-2C15.14 9.14 8.87 9.14 5 13z"/%3E%3C/svg%3E'>
+        </div>
+        <div class="controlCenterButton color">
+            <div class="indicator indicatorFalse" style="left: 77px;bottom: 5px;"></div>
+            <img src='data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"%3E%3Cpath d="M17.71 7.71L12 2h-1v7.59L6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 11 14.41V22h1l5.71-5.71-4.3-4.29 4.3-4.29zM13 5.83l1.88 1.88L13 9.59V5.83zm1.88 10.46L13 18.17v-3.76l1.88 1.88z"/%3E%3C/svg%3E'>
+        </div>
+        <div class="controlCenterButton color">
+            <div class="indicator indicatorFalse" style="left: 77px;bottom: 5px;"></div>
+            <img src='data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"%3E%3Cpath d="M21 16v-2l-8-5V3.5c0-.83-.67-1.5-1.5-1.5S10 2.67 10 3.5V9l-8 5v2l8-2.5V19l-2 1.5V22l3.5-1 3.5 1v-1.5L13 19v-5.5l8 2.5z"/%3E%3C/svg%3E'>
+        </div>
+    </div>
+
+    <div class="wifi-section" id="wifiSection">
+        <button onclick="scanWifi()" style="width: 100%; padding: 8px; background: rgba(255,255,255,0.1); border: none; color: white; border-radius: 6px; cursor: pointer; margin-bottom: 10px;">Scan WiFi</button>
+        <div id="wifiList"></div>
+    </div>
+
+    <div class="sliderContainer">
+        <img class="darkMode" src='data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"%3E%3Cpath d="M20 8.69V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12 20 8.69zM12 18c-3.31 0-6-2.69-6-6s2.69-6 6-6 6 2.69 6 6-2.69 6-6 6zm0-10c-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4-1.79-4-4-4z"/%3E%3C/svg%3E'>
+        <input type="range" min="1" max="100" value="80" class="slider" id="brightnessSlider">
+    </div>
+
+    <div class="sliderContainer">
+        <img class="darkMode" src='data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"%3E%3Cpath d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02z"/%3E%3C/svg%3E'>
+        <input type="range" min="0" max="100" value="50" class="slider" id="volumeSlider">
+    </div>
+
+    <div class="trayContainer" id="trayContainer"></div>
+</div>
+
+<script>
+    const { exec } = require('child_process');
+    const fs = require('fs');
+    const path = require('path');
+
+    let currentPopup = null;
+    let barRunningApps = [];
+
+    // Universal popup positioning function
+    function openPopupAtClick(event, popupId) {
+        const popup = document.getElementById(popupId);
+        const clickedElement = event.currentTarget;
+        const rect = clickedElement.getBoundingClientRect();
+
+        // Close if clicking same popup
+        if (currentPopup === popup && popup.classList.contains('show')) {
+            closeAllPopups();
+            return;
+        }
+
+        closeAllPopups();
+
+        // Calculate position
+        const popupWidth = popup.offsetWidth || 350;
+        const popupHeight = popup.offsetHeight || 400;
+
+        // Position above the button
+        let left = rect.left + (rect.width / 2) - (popupWidth / 2);
+        let bottom = window.innerHeight - rect.top + 10;
+
+        // Keep on screen horizontally
+        if (left < 10) left = 10;
+        if (left + popupWidth > window.innerWidth - 10) {
+            left = window.innerWidth - popupWidth - 10;
+        }
+
+        // Keep on screen vertically
+        if (window.innerHeight - bottom - popupHeight < 10) {
+            // If not enough space above, show below
+            popup.style.top = (rect.bottom + 10) + 'px';
+            popup.style.bottom = 'auto';
+        } else {
+            popup.style.bottom = bottom + 'px';
+            popup.style.top = 'auto';
+        }
+
+        popup.style.left = left + 'px';
+        popup.classList.add('show');
+        currentPopup = popup;
+    }
+
+    function closeAllPopups() {
+        document.querySelectorAll('.popup-container').forEach(p => p.classList.remove('show'));
+        currentPopup = null;
+    }
+
+    // Click outside to close
+    document.addEventListener('click', (e) => {
+        if (!e.target.closest('.popup-container') && !e.target.closest('.taskbutton') && !e.target.closest('#barClockID')) {
+            closeAllPopups();
+        }
+    });
+
+    // Load running apps
+    function loadRunningApps() {
+        exec('wmctrl -lp 2>/dev/null', (error, stdout) => {
+            if (error) return;
+
+            const barElement = document.getElementById('barAppsID');
+            const newApps = new Set();
+            const lines = stdout.trim().split('\n');
+
+            for (const line of lines) {
+                const parts = line.trim().split(/\s+/);
+                if (parts.length < 4) continue;
+
+                const pid = parts[2];
+                const title = parts.slice(4).join(' ');
+
+                exec(`ps -p ${pid} -o comm= 2>/dev/null`, (err, pname) => {
+                    if (!err && pname.trim()) {
+                        const processName = pname.trim();
+                        const iconPath = findIcon(processName);
+
+                        if (!barRunningApps.includes(processName)) {
+                            barRunningApps.push(processName);
+
+                            const btn = document.createElement('div');
+                            btn.className = 'taskbutton color darkMode';
+                            btn.title = title;
+
+                            if (iconPath && fs.existsSync(iconPath)) {
+                                btn.innerHTML = `<img src="file://${iconPath}" class="darkMode">`;
+                            } else {
+                                btn.textContent = processName.charAt(0).toUpperCase();
+                            }
+
+                            barElement.appendChild(btn);
+                        }
+                    }
+                });
+            }
+        });
+    }
+
+    function findIcon(name) {
+        const paths = [
+            `/usr/share/pixmaps/${name}.png`,
+            `/usr/share/icons/hicolor/48x48/apps/${name}.png`,
+            `/usr/share/icons/hicolor/64x64/apps/${name}.png`
+        ];
+
+        for (const p of paths) {
+            if (fs.existsSync(p)) return p;
+        }
+        return null;
+    }
+
+    // Load app menu
+    function loadAppMenu() {
+        const container = document.getElementById('appMenuID');
+        const desktopPaths = [
+            '/usr/share/applications',
+            path.join(process.env.HOME, '.local/share/applications')
+        ];
+
+        desktopPaths.forEach(dir => {
+            if (!fs.existsSync(dir)) return;
+
+            const files = fs.readdirSync(dir).filter(f => f.endsWith('.desktop'));
+            files.forEach(file => {
+                const content = fs.readFileSync(path.join(dir, file), 'utf8');
+                const nameMatch = content.match(/^Name=(.+)$/m);
+                const iconMatch = content.match(/^Icon=(.+)$/m);
+                const execMatch = content.match(/^Exec=(.+)$/m);
+
+                if (nameMatch && execMatch) {
+                    const item = document.createElement('div');
+                    item.className = 'appMenuIconContainer';
+
+                    const iconPath = iconMatch ? findIcon(iconMatch[1]) : null;
+                    const iconSrc = (iconPath && fs.existsSync(iconPath))
+                        ? `file://${iconPath}`
+                        : 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"%3E%3Ctext x="50%25" y="50%25" dominant-baseline="middle" text-anchor="middle" font-size="20"%3E📦%3C/text%3E%3C/svg%3E';
+
+                    item.innerHTML = `
+                        <img class="appMenuIcon" src="${iconSrc}">
+                        <div>${nameMatch[1]}</div>
+                    `;
+                    item.onclick = () => {
+                        exec(execMatch[1].replace(/%\w/g, ''));
+                        closeAllPopups();
+                    };
+                    container.appendChild(item);
+                }
+            });
+        });
+    }
+
+    // Calendar
+    function loadCalendar() {
+        const container = document.getElementById('calendarID');
+        const now = new Date();
+        container.innerHTML = `<h3 style="color:white; margin-bottom: 20px;">${now.toLocaleDateString('en-US', { month: 'long', year: 'numeric' })}</h3>`;
+    }
+
+    // Clock
+    function updateClock() {
+        const now = new Date();
+        const time = now.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: false });
+        const date = now.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+        document.getElementById('barClockID').textContent = `${date} ${time}`;
+    }
+
+    // WiFi
+    let wifiEnabled = false;
+    function toggleWifi() {
+        wifiEnabled = !wifiEnabled;
+        document.getElementById('wifiSection').classList.toggle('show', wifiEnabled);
+        document.getElementById('wifiIndicator').className = 'indicator ' + (wifiEnabled ? 'indicatorTrue' : 'indicatorFalse');
+    }
+
+    function scanWifi() {
+        const list = document.getElementById('wifiList');
+        list.innerHTML = '<div style="color: rgba(255,255,255,0.7); padding: 10px;">Scanning...</div>';
+
+        exec('nmcli -t -f SSID,SIGNAL,SECURITY,ACTIVE device wifi list 2>/dev/null', (error, stdout) => {
+            if (error) {
+                list.innerHTML = '<div style="color: rgba(255,255,255,0.7); padding: 10px;">WiFi not available</div>';
+                return;
+            }
+
+            list.innerHTML = '';
+            stdout.trim().split('\n').forEach(line => {
+                const [ssid, signal, security, active] = line.split(':');
+                if (!ssid || ssid === '--') return;
+
+                const item = document.createElement('div');
+                item.className = 'wifi-item' + (active === 'yes' ? ' connected' : '');
+                item.innerHTML = `
+                    <span>📶 ${ssid} (${signal}%)</span>
+                    <span>${active === 'yes' ? '✓' : (security ? '🔒' : '')}</span>
+                `;
+                list.appendChild(item);
+            });
+        });
+    }
+
+    // Load tray icons
+    function loadTrayIcons() {
+        const container = document.getElementById('trayContainer');
+        exec('ps aux', (error, stdout) => {
+            if (error) return;
+
+            const apps = ['viber', 'skype', 'discord', 'telegram', 'slack', 'zoom', 'dropbox', 'spotify'];
+            container.innerHTML = '';
+
+            apps.forEach(app => {
+                if (stdout.toLowerCase().includes(app)) {
+                    const icon = document.createElement('div');
+                    icon.className = 'tray-icon color';
+                    icon.title = app;
+                    icon.textContent = app.charAt(0).toUpperCase();
+                    container.appendChild(icon);
+                }
+            });
+        });
+    }
+
+    // Sliders
+    document.getElementById('brightnessSlider').addEventListener('input', (e) => {
+        exec(`brightnessctl set ${e.target.value}%`);
+    });
+
+    document.getElementById('volumeSlider').addEventListener('input', (e) => {
+        exec(`amixer set Master ${e.target.value}%`);
+    });
+
+    // Initialize
+    updateClock();
+    setInterval(updateClock, 60000);
+    loadCalendar();
+    loadAppMenu();
+    loadRunningApps();
+    loadTrayIcons();
+    setInterval(loadRunningApps, 3000);
+    setInterval(loadTrayIcons, 3000);
+</script>
+</body>
+</html>

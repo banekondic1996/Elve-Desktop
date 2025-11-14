@@ -1,0 +1,533 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Desk</title>
+<style>
+    body
+    {
+        margin: 0;
+        padding: 0;
+        overflow: hidden;
+        background:url('imgT.jpg');
+        background-repeat: no-repeat;
+        background-size: cover;
+    }
+    #select
+    {
+        display: none;
+        background: #0000005c;
+        position: absolute;
+        border-radius: 12px;
+        left: 184px;
+        top: 211px;
+        transform-origin: left top;
+        z-index: 999;
+    }
+    .desktopIcon{
+        display: flex;
+        background-color:rgb(255 51 51 / 22%);
+        width: 60px;
+        height: 60px;
+        margin: 3px;
+        padding: 5px;
+        user-select: none;
+    }
+    .desktopIconIn
+    {
+        border-radius: 5px;
+        height: 60px;
+        width: 60px;
+        flex-direction: column;
+        align-items: center;
+        margin: auto;
+        overflow: hidden;
+        text-align-last: center;
+        user-select: all;
+        -webkit-user-drag: element;
+        position: absolute;
+        z-index: 10;
+    }
+    .desktopIconIn:hover{
+        background-color: rgba(255, 255, 255, 0.268);
+        height: auto;
+    }
+    .desktopIconIn:active{
+        background-color: rgba(255, 255, 255, 0.452);
+        height: auto;
+    }
+    .desktopIconIn img{
+        user-select: none;
+        height: 42px;
+        width: 42px;
+        user-select: none;
+        -webkit-user-drag: none;
+    }
+    .desktopIconInText{
+        margin-top: -6px;
+        text-align: center;
+        color: white;
+        text-shadow: 1px 1px 3px #7c7c7c;
+        text-overflow: clip;
+        user-select: none;
+        -webkit-user-drag: none;
+    }
+    .icons{
+        display: flex;
+        background: #fffefe;
+        padding: 6px;
+    }
+    .contextMenu{
+        display: none;
+        position: absolute;
+        background-color: rgb(228, 228, 228);
+        opacity: 0.8;
+        border: none;
+        border-radius: 10px;
+        overflow: hidden;
+        z-index: 222;
+        left: 116px;
+        top: 50px;
+    }
+    .contextMenu tr td{
+        border-radius: 10px;
+        text-wrap: nowrap;
+        padding: 8px;
+        cursor: pointer;
+    }
+    .contextMenu tr td:hover{
+        background:rgb(124, 124, 124);
+        text-align: center;
+    }
+    .contextMenu tr th img:hover{
+        border-radius: 100%;
+        background:rgb(236, 236, 236);
+    }
+    .contextMenu tr th img{
+        padding:5px;
+    }
+
+    /* Icon context menu */
+    .iconContextMenu {
+        display: none;
+        position: absolute;
+        background-color: rgba(40, 40, 40, 0.95);
+        backdrop-filter: blur(10px);
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        border-radius: 10px;
+        overflow: hidden;
+        z-index: 10000;
+        padding: 5px 0;
+        min-width: 160px;
+    }
+    .iconContextMenu.show {
+        display: block;
+    }
+    .iconContextMenuItem {
+        padding: 10px 15px;
+        color: white;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+    .iconContextMenuItem:hover {
+        background: rgba(255, 255, 255, 0.1);
+    }
+    .contextMenuSeparator {
+        height: 1px;
+        background: rgba(255, 255, 255, 0.2);
+        margin: 5px 0;
+    }
+</style>
+</head>
+<body>
+<!--    ---------Desktop Context menu START------------------ -->
+    <div class="contextMenu" id="contextMenuID">
+        <table style="width: 100%;display: flex;">
+        <tbody style="width: 100%;display: flex;flex-direction: row;align-items: center;">
+        <tr>
+            <th style="display: flex;flex-direction: column;">
+                <div class="icons" style="display: flex;" onclick="copyDesktop()">
+                    <img alt="Copy" src="/icons/copy.png" style="height: 24px;">
+                </div>
+                <div class="icons" style="display: flex;" onclick="pasteDesktop()">
+                    <img alt="Paste" src="/icons/paste.png" style="height: 24px;">
+                </div>
+                <div class="icons" style="display: flex;" onclick="createNew('folder')">
+                    <img alt="New Folder" src="/icons/add.png" style="height: 24px;">
+                </div>
+                <div class="icons" style="display: flex;" onclick="refresh()">
+                    <img alt="Refresh" src="/icons/reload.png" style="height: 24px;">
+                </div>
+                <div class="icons" style="display: flex;" onclick="openSettings()">
+                    <img alt="Settings" src="/icons/settings.png" style="height: 24px;">
+                </div>
+            </th>
+        </tr>
+        </tbody>
+        </table>
+    </div>
+<!--    ---------Desktop Context menu END------------------ -->
+
+<!--    ---------Icon Context menu START------------------ -->
+    <div class="iconContextMenu" id="iconContextMenu">
+        <div class="iconContextMenuItem" onclick="openIcon()">📂 Open</div>
+        <div class="contextMenuSeparator"></div>
+        <div class="iconContextMenuItem" onclick="copyIcon()">📋 Copy</div>
+        <div class="iconContextMenuItem" onclick="cutIcon()">✂️ Cut</div>
+        <div class="iconContextMenuItem" onclick="deleteIcon()">🗑️ Delete</div>
+        <div class="iconContextMenuItem" onclick="renameIcon()">✏️ Rename</div>
+        <div class="contextMenuSeparator"></div>
+        <div class="iconContextMenuItem" onclick="compressIcon()">📦 Compress</div>
+        <div class="iconContextMenuItem" onclick="propertiesIcon()">ℹ️ Properties</div>
+    </div>
+<!--    ---------Icon Context menu END------------------ -->
+
+<!--    ---------DesktopGrid START------------------ -->
+    <div id="desktopID" style="position: absolute;display: block;height: 100%;width: 100%;"></div>
+    <div id="desktopGridID" class="desktopGrid" style="display: flex;height: 93%;width: 100%;margin: auto;flex-direction: row;flex-wrap: wrap;align-items: center;justify-content: center;"></div>
+<!--    ---------Desktop Grid END------------------ -->
+<!--    ---------Selection START------------------ -->
+<div id="select"></div>
+<!--    ---------Selection END------------------ -->
+
+<script>
+    const fs = require('fs');
+    const path = require('path');
+    const { exec } = require('child_process');
+    const desktopPath = path.join(process.env.HOME, 'Desktop');
+    let desktopGridElement = document.getElementById('desktopGridID');
+    let desktopGridHeight = desktopGridElement.offsetHeight;
+    let desktopGridWidth = desktopGridElement.offsetWidth;
+    let desktopGridFields = Math.floor(desktopGridWidth/76) * Math.floor(desktopGridHeight/76);
+    let desktopIcons = [];
+    let selectionElement = document.getElementById('select');
+    let contextMenuElement = document.getElementById('contextMenuID');
+    let iconContextMenuElement = document.getElementById('iconContextMenu');
+    let selectedIconElement = null;
+    let clipboard = null;
+    let clipboardAction = null;
+    let mouseDown = false;
+
+    // Load icons from Desktop folder
+    function loadDesktopIcons() {
+        desktopIcons = [];
+
+        if (!fs.existsSync(desktopPath)) {
+            fs.mkdirSync(desktopPath);
+        }
+
+        const files = fs.readdirSync(desktopPath);
+        files.forEach((file, index) => {
+            const fullPath = path.join(desktopPath, file);
+            const stats = fs.statSync(fullPath);
+
+            let iconSrc = '/icons/file.png';
+            if (stats.isDirectory()) iconSrc = '/icons/folder.png';
+            else if (file.endsWith('.png') || file.endsWith('.jpg')) iconSrc = '/icons/image.png';
+            else if (file.endsWith('.txt')) iconSrc = '/icons/text.png';
+
+            desktopIcons.push({
+                name: file,
+                icon: iconSrc,
+                gridPosition: index,
+                path: fullPath,
+                isDirectory: stats.isDirectory()
+            });
+        });
+
+        spawnDesktopGrid();
+        spawnDesktopIcons();
+    }
+
+    // Spawn grid
+    function spawnDesktopGrid() {
+        desktopGridElement.innerHTML = "";
+        for(let i = 0; i < desktopGridFields; i++) {
+            desktopGridElement.innerHTML += `<div class="desktopIcon" draggable="false"></div>`;
+        }
+    }
+
+    // Spawn icons
+    function spawnDesktopIcons() {
+        desktopIcons.forEach(el => {
+            if(el.gridPosition >= 0 && el.gridPosition < desktopGridFields) {
+                const iconElement = desktopGridElement.children[el.gridPosition];
+                iconElement.innerHTML = `<div class="desktopIconIn" data-path="${el.path}"><img src="${el.icon}"><div class="desktopIconInText">${el.name}</div></div>`;
+                iconElement.dataset.iconPath = el.path;
+                dragElement(iconElement.children[0]);
+            }
+        });
+    }
+
+    // Open file/folder
+    function openFile(filePath) {
+        exec(`xdg-open "${filePath}"`, (error) => {
+            if (error) console.error('Error opening:', error);
+        });
+    }
+
+    // Drag element
+    function dragElement(elmnt) {
+        let pos1 = 0, pos2 = 0, pos3 = 0, pos4 = 0;
+        elmnt.onmousedown = dragMouseDown;
+
+        function dragMouseDown(e) {
+            e.stopPropagation();
+            e.preventDefault();
+            pos3 = e.clientX;
+            pos4 = e.clientY;
+            document.onmouseup = closeDragElement;
+            document.onmousemove = elementDrag;
+        }
+
+        function elementDrag(e) {
+            e.preventDefault();
+            pos1 = pos3 - e.clientX;
+            pos2 = pos4 - e.clientY;
+            pos3 = e.clientX;
+            pos4 = e.clientY;
+            elmnt.style.top = (elmnt.offsetTop - pos2) + "px";
+            elmnt.style.left = (elmnt.offsetLeft - pos1) + "px";
+        }
+
+        function closeDragElement() {
+            const cell = Math.round((elmnt.offsetTop)/82) * 20 + (Math.round((76 + elmnt.offsetLeft)/76)) - 1;
+            elmnt.style.top = null;
+            elmnt.style.left = null;
+
+            if (cell >= 0 && cell < desktopGridFields && desktopGridElement.children[cell].children[0] == null) {
+                desktopGridElement.children[cell].append(elmnt);
+
+                // Update position in array
+                const iconPath = elmnt.dataset.path;
+                const icon = desktopIcons.find(i => i.path === iconPath);
+                if (icon) icon.gridPosition = cell;
+            }
+
+            document.onmouseup = null;
+            document.onmousemove = null;
+        }
+    }
+
+    // Selection rectangle
+    document.addEventListener('mousedown', function(e) {
+        if (e.target.classList.contains('desktopIconIn')) return;
+        if (e.target.closest('.contextMenu') || e.target.closest('.iconContextMenu')) return;
+
+        hideAllContextMenus();
+        mouseDown = true;
+        selectionElement.style.height = "0px";
+        selectionElement.style.width = "0px";
+        selectionElement.style.display = "block";
+        selectionElement.style.top = e.clientY + "px";
+        selectionElement.style.left = e.clientX + "px";
+    });
+
+    document.addEventListener('mousemove', function(e) {
+        if (!mouseDown) return;
+
+        let selectHeight = e.clientY - selectionElement.offsetTop;
+        let selectWidth = e.clientX - selectionElement.offsetLeft;
+
+        if (selectHeight > 0 && selectWidth > 0) {
+            selectionElement.style.transform = "rotate(0deg)";
+            selectionElement.style.translate = "0%";
+            selectionElement.style.height = selectHeight + "px";
+            selectionElement.style.width = selectWidth + "px";
+        }
+        if (selectHeight < 0 && selectWidth > 0) {
+            selectionElement.style.transform = "rotate(180deg)";
+            selectionElement.style.translate = "100%";
+            selectionElement.style.height = Math.abs(selectHeight) + "px";
+            selectionElement.style.width = selectWidth + "px";
+        }
+        if (selectHeight > 0 && selectWidth < 0) {
+            selectionElement.style.transform = "rotate(0deg)";
+            selectionElement.style.translate = "-100%";
+            selectionElement.style.height = selectHeight + "px";
+            selectionElement.style.width = Math.abs(selectWidth) + "px";
+        }
+        if (selectHeight < 0 && selectWidth < 0) {
+            selectionElement.style.transform = "rotate(180deg)";
+            selectionElement.style.translate = "0%";
+            selectionElement.style.height = Math.abs(selectHeight) + "px";
+            selectionElement.style.width = Math.abs(selectWidth) + "px";
+        }
+    });
+
+    document.addEventListener('mouseup', function() {
+        mouseDown = false;
+        selectionElement.style.display = "none";
+    });
+
+    // Desktop context menu
+    document.addEventListener('contextmenu', function(e) {
+        if (e.target.classList.contains('desktopIconIn') || e.target.closest('.desktopIconIn')) {
+            showIconContextMenu(e);
+            return;
+        }
+
+        e.preventDefault();
+        hideAllContextMenus();
+        contextMenuElement.style.display = "block";
+        contextMenuElement.style.left = e.clientX + "px";
+        contextMenuElement.style.top = e.clientY + "px";
+    });
+
+    // Icon context menu
+    function showIconContextMenu(e) {
+        e.preventDefault();
+        e.stopPropagation();
+
+        hideAllContextMenus();
+
+        const iconEl = e.target.closest('.desktopIconIn');
+        selectedIconElement = iconEl;
+
+        iconContextMenuElement.style.left = e.clientX + "px";
+        iconContextMenuElement.style.top = e.clientY + "px";
+        iconContextMenuElement.classList.add('show');
+    }
+
+    function hideAllContextMenus() {
+        contextMenuElement.style.display = "none";
+        iconContextMenuElement.classList.remove('show');
+    }
+
+    document.addEventListener('click', hideAllContextMenus);
+
+    // Icon context menu actions
+    function openIcon() {
+        if (!selectedIconElement) return;
+        openFile(selectedIconElement.dataset.path);
+        hideAllContextMenus();
+    }
+
+    function copyIcon() {
+        if (!selectedIconElement) return;
+        clipboard = selectedIconElement.dataset.path;
+        clipboardAction = 'copy';
+        hideAllContextMenus();
+    }
+
+    function cutIcon() {
+        if (!selectedIconElement) return;
+        clipboard = selectedIconElement.dataset.path;
+        clipboardAction = 'cut';
+        hideAllContextMenus();
+    }
+
+    function deleteIcon() {
+        if (!selectedIconElement) return;
+        if (!confirm('Delete this file?')) return;
+
+        exec(`gio trash "${selectedIconElement.dataset.path}"`, (error) => {
+            if (error) {
+                fs.unlinkSync(selectedIconElement.dataset.path);
+            }
+            loadDesktopIcons();
+        });
+        hideAllContextMenus();
+    }
+
+    function renameIcon() {
+        if (!selectedIconElement) return;
+
+        const oldPath = selectedIconElement.dataset.path;
+        const oldName = path.basename(oldPath);
+        const newName = prompt('New name:', oldName);
+        if (!newName || newName === oldName) return;
+
+        const newPath = path.join(path.dirname(oldPath), newName);
+        fs.renameSync(oldPath, newPath);
+        loadDesktopIcons();
+        hideAllContextMenus();
+    }
+
+    function compressIcon() {
+        if (!selectedIconElement) return;
+
+        const filePath = selectedIconElement.dataset.path;
+        const archiveName = `${path.basename(filePath)}_${Date.now()}.tar.gz`;
+
+        exec(`tar -czf "${path.join(desktopPath, archiveName)}" "${filePath}"`, (error) => {
+            if (error) console.error('Error compressing:', error);
+            else loadDesktopIcons();
+        });
+        hideAllContextMenus();
+    }
+
+    function propertiesIcon() {
+        if (!selectedIconElement) return;
+
+        const stats = fs.statSync(selectedIconElement.dataset.path);
+        alert(`Name: ${path.basename(selectedIconElement.dataset.path)}\nSize: ${stats.size} bytes\nModified: ${stats.mtime}`);
+        hideAllContextMenus();
+    }
+
+    // Desktop context menu actions
+    function copyDesktop() {
+        // Placeholder
+        hideAllContextMenus();
+    }
+
+    function pasteDesktop() {
+        if (!clipboard) return;
+
+        const fileName = path.basename(clipboard);
+        const destPath = path.join(desktopPath, fileName);
+
+        if (clipboardAction === 'copy') {
+            fs.copyFileSync(clipboard, destPath);
+        } else if (clipboardAction === 'cut') {
+            fs.renameSync(clipboard, destPath);
+            clipboard = null;
+            clipboardAction = null;
+        }
+
+        loadDesktopIcons();
+        hideAllContextMenus();
+    }
+
+    function createNew(type) {
+        const name = prompt(`New ${type} name:`);
+        if (!name) return;
+
+        const newPath = path.join(desktopPath, name);
+
+        if (type === 'folder') {
+            fs.mkdirSync(newPath);
+        } else {
+            fs.writeFileSync(newPath, '');
+        }
+
+        loadDesktopIcons();
+        hideAllContextMenus();
+    }
+
+    function refresh() {
+        loadDesktopIcons();
+        hideAllContextMenus();
+    }
+
+    function openSettings() {
+        exec('gnome-control-center || systemsettings5');
+        hideAllContextMenus();
+    }
+
+    // Double click to open
+    document.addEventListener('dblclick', function(e) {
+        const iconEl = e.target.closest('.desktopIconIn');
+        if (iconEl) {
+            openFile(iconEl.dataset.path);
+        }
+    });
+
+    // Initialize
+    loadDesktopIcons();
+</script>
+</body>
+</html>
