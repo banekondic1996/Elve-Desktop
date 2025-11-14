@@ -1,0 +1,16 @@
+{
+    "name": "Melo",
+    "main": "index.html",
+    "chromium-args": "--mixed-context --disable-pinch",
+    "window": {
+        "frame": false,
+        "width": 1200,
+        "height": 720,
+        "position": "center",
+        "icon":"set/mello_logo2d.png",
+        "transparent": false,
+        "min_width":350,
+        "min_height":420,
+        "resizable": false
+     }
+  }

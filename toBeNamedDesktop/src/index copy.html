@@ -1,0 +1,336 @@
+<!DOCTYPE html>
+<html lang="en" manifest="edgy.appcache">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Edgy</title>
+  <style>
+    body{
+      margin: 0px;
+      padding:0px;
+      user-select: none;
+      overflow: hidden;
+      display: flex;
+      background: rgba(255, 255, 255, 0);
+    }
+    .webViewTab{
+      background: #ffffffde;
+      border-radius: 20px;
+      height: 100%;
+      width: 360px;
+      position: absolute;
+      right: 62px;
+      transition: width 0.5s;
+    }
+    .tabBar{
+      background: rgba(255, 255, 255, 0.192);
+      border-radius: 4px;
+      height: 100%;
+      width: 52px;
+      margin-left: 10px;
+      position: absolute;
+      right: 5px;
+    }
+    .tabBar img{  
+      margin-top: 4px;
+      width:22px;
+      height: auto;
+    }
+    .tabBar button{
+      height:42px;
+      width:42px;
+      margin-top:7px;
+      margin-left:5px;
+      border-radius: 8px;
+      border: none;
+    }
+    .webview{
+      border-radius: 10px;
+      position: absolute;
+      contain: content;
+    }
+    .hoverBar{
+      display: inline-block;
+      position: absolute;
+      background: #ff05054d;
+      border-radius: 4px;
+      height: 100px;
+      width: 10px;
+      margin-left: 0px;
+      right: 0px;
+      /* top:80%; */
+      z-index:1200;
+    }
+    .viewCanceller{
+      display: inline-block;
+      position: absolute;
+      background: #0000008f;
+      border-radius: 4px;
+      height: 100%;
+      width: 80%;
+      margin-left: 0px;
+    }
+    #addContainerId {
+      margin: 0px;
+      padding: 0px;
+      left: 10%;
+      top: 30%;
+      z-index: 9000;
+      position: absolute;
+      display: none;
+      background: rgba(0, 0, 0, 0.671);
+      flex-direction: column;
+      border-radius: 12px;
+      contain: content;
+    }
+    #inputAddButtonId{
+      display: flex;
+      padding: 10px;
+      flex-direction: row;
+    }
+    #inputAddButtonId input[type=button]{
+      width: 23px;
+      height: 23px;
+      margin: 2px;
+      border-radius: 24px;
+      font-size: larger;
+      border: none;
+      margin-top: 7px;
+    }
+    #inputAddButtonId input[type=text]{
+      border-radius: 8px;
+      height: 30px;
+      width: 200px;
+      margin-right: 3px;
+      margin-left: 7px;
+      border:none;
+    }
+    #inputAddButtonId input[type=image]{
+      width: auto;
+      margin: auto;
+      border-radius: 8px;
+    }
+    #pinBarId{
+      background: white;
+    }
+    #tabButtonsContainerId{
+      margin: auto;
+      padding: auto;
+      display: flex;
+      flex-direction: column;
+      flex-wrap: nowrap;
+      height: 100%;
+    }
+    #lastButtonsTabBarId{
+      margin: auto;
+      margin-bottom: 10%;
+    }
+    #contentContainerId{
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      /* background: white; */
+    }
+    #tabButtonsId{
+      overflow-x: hidden;
+    }
+    #contextMenuId{
+      display:none;
+      position: absolute;
+      background: white;
+      z-index: 9000;
+      padding: 4px;
+      flex-wrap: nowrap;
+      flex-direction: column;
+      border-radius: 8px;
+    }
+    #contextMenuId div{
+      padding: 4px;
+      border-radius: 8px;
+    } 
+    #contextMenuId div:hover{
+      background: rgb(153, 153, 153);
+    } 
+    ::-webkit-scrollbar {
+     background: rgba(255, 255, 255, 0);
+     width: 0px;
+    }
+  </style>
+</head>
+<body>
+  <div id="contentContainerId">
+  <div id="addContainerId">
+    <div id="inputAddButtonId">
+      <input id="faviconId" type="image" src="" alt="">
+      <input id="inputURLId" type="text" name="" id="" oninput="faviconS.src=this.value+'/favicon.ico'">
+      <input type="button" style="background:rgb(157, 255, 157)" value="" onclick="addButton(inputURLs.value);">
+      <input type="button" style="background:rgb(255, 164, 164)" value="" onclick="addContainers.style.display='none';inputURLs.value=''">
+    </div>
+    <div style="display: flex;justify-content: space-around;padding: 5px;">
+      <select id="optionsForAddId" style="border-radius: 10px;padding: 5px;" onchange="inputURLs.value=optionsForAdds.value">
+        <option value="https://account.viber.com/en/login">Viber</option>
+        <option value="https://www.messenger.com/">Messenger</option>
+        <option value="https://web.whatsapp.com/">WhatsUp</option>
+      </select>
+    </div>
+  </div>
+ <div id="contextMenuId">
+  <div>Change icon</div>
+  <div onclick="var txt='webView-'+selectedItemNumber;document.getElementById(txt).remove();console.log(txt);selectedItem.remove();contextMenus.style.display='none'">Remove item</div>
+ </div>
+  <!-- <div class="viewCanceller" id="viewCancellerId" onmouseover="hideUI()"></div> -->
+  <div class="webViewTab" id="webViewTabId">
+    <!-- <webview class="webView" id="foo" src="https://windows.msn.com/windows/newsbar" style="background: rgba(249, 74, 74, 0.307);"></webview> -->
+    <webview class="webView" id="webView-1" src="https://windows.msn.com/windows/newsbar" style="display: none;"></webview>
+    <webview class="webView" id="webView-2" src="https://chat.openai.com/" style="display: none;"></webview>
+    <webview class="webView" id="webView-3" src="https://copilot.microsoft.com" style="display: none;"></webview>
+    <!-- <div id="pinBarId">This is pin bar</div> -->
+  </div>
+
+  <div class="tabBar" id="tabBarId">
+    <div id="tabButtonsContainerId">
+   <div id="tabButtonsId">
+    <button oncontextmenu="displayContext(event,this,1)" onclick="displayView(1);"><img src="https://windows.msn.com/favicon.ico" alt="" ></button>
+    <button oncontextmenu="displayContext(event,this,2)" onclick="displayView(2);"><img src="https://chat.openai.com/favicon.ico" alt="" ></button>
+    <button oncontextmenu="displayContext(event,this,3)" onclick="displayView(3);"><img src="https://copilot.microsoft.com/favicon.ico" alt=""></button>
+   </div>
+    <div>
+      <button onclick="showAddField(event)"><img style="filter: opacity(0.5);" src="add.png" alt=""></button>
+    </div>
+    <div id="lastButtonsTabBarId">
+      <button onclick="pinButton();"><img src="pin.png" alt="" ></button>
+      <button onclick="settingsButton();"><img src="settings.png" alt="" ></button>
+    </div>
+  </div>
+</div>
+</div>
+  <div class="hoverBar" id="hoverBarId" onmouseover="showUI()"></div>
+  <script>
+    var win = nw.Window.get();
+    console.log(window.screen.width);
+    /* win.moveTo(1100, 0); */
+    /*  win.setAlwaysOnTop(true); */
+    win.maximize();
+    let selectedItem;
+    let selectedItemNumber;
+    let screenWidth=window.screen.width;
+    let screenHeight=window.outerHeight;
+    let activeView;
+    let contextMenus=document.getElementById('contextMenuId');
+    let containers=document.getElementById('contentContainerId');
+    let hoverBars=document.getElementById('hoverBarId');
+    let webViewTabs=document.getElementById('webViewTabId');
+    let tabBars=document.getElementById('tabBarId');
+    let tabButtonss=document.getElementById('tabButtonsId');
+    let faviconS=document.getElementById('faviconId');
+    let optionsForAdds=document.getElementById('optionsForAddId');
+ /*    let viewCancellers=document.getElementById('viewCancellerId'); */
+    let inputURLs=document.getElementById('inputURLId');
+    let addContainers=document.getElementById('addContainerId');
+    let show='false';
+    var onTop=false;
+    function displayView(viewNumber){
+      if(activeView){
+      activeView.style.display="none";
+    }
+      var numTxt="webView-"+viewNumber;
+      activeView=document.getElementById(numTxt);
+      activeView.style.display='inline';
+    }
+    function hideUI(){
+      webViewTabs.style.width='0px';
+      tabBars.style.display='none';
+      /* viewCancellers.style.display='none'; */
+      win.resizeTo(100,32);
+      win.moveTo(screenWidth-130,screenHeight-60);
+      hoverBars.style.display='inline-block';
+    }
+    function showUI(){
+      win.resizeTo(425,screenHeight);
+      win.moveTo(screenWidth-420,0);
+      webViewTabs.style.width='360px';
+      tabBars.style.display='inline-block';
+      hoverBars.style.display='none';
+/*       viewCancellers.style.display='inline-block'; */
+   /*    if(show==false){
+      webViewTabs.style.display='inline-block';
+      tabBars.style.display='inline-block';
+      show=true;
+    }
+    else if (show==true){
+      webViewTabs.style.display='none';
+      tabBars.style.display='none';
+    } */
+    }
+    function addButton(URL){
+      let count=document.getElementsByClassName('webView').length+1;
+      tabButtonss.innerHTML=tabButtonss.innerHTML+`<button oncontextmenu="displayContext(event,this,`+count+`)" onclick="displayView(`+count+`);"><img src="`+URL+`/favicon.ico" alt=""></button>`
+      webViewTabs.innerHTML=webViewTabs.innerHTML+`<webview class="webView" id="webView-`+count+`" src="`+URL+`" style="display: none;"></webview>`
+    }
+    function pinButton(){
+      if(!onTop){
+      win.setAlwaysOnTop(true);
+      onTop=true;
+      /* viewCancellers.style.display='none'; */
+    /*   win.resizeTo(500,1080);
+      win.moveTo(1060, 0); */
+      }
+      else if(onTop){
+      win.setAlwaysOnTop(false);
+      onTop=false;
+      /* viewCancellers.style.display='inline-block'; */
+      }
+    }
+    function showAddField(ev){
+     console.log(addContainers.style.display.value);
+      if(!addContainers.checkVisibility()){
+/*       addContainers.style.left=ev.clientX-300+"px";
+      addContainers.style.top=ev.clientY+"px"; */
+      addContainers.style.display="flex";
+    }
+    }
+    setTimeout(() => {
+      screenHeight=window.outerHeight;
+      win.unmaximize();
+      hideUI();
+      win.resizeTo(100,32);
+      win.moveTo(screenWidth-135,screenHeight-60);
+      console.log(screenHeight+"after unmaximize 2");
+    }, 400);
+    /* containers.addEventListener('mouseleave', function() {if(onTop==false){hideUI()};console.log("is out");}); */
+   /*  hideUI(); */
+   /*   win.enterFullscreen();
+    console.log(window.screen.width); */
+    /* win.leaveFullscreen(); */
+    function displayContext(ev,el,num){
+      selectedItem=el;
+      selectedItemNumber=num;
+      contextMenus.style.display='flex';
+      contextMenus.style.left=ev.clientX-120+"px";
+      contextMenus.style.top=ev.clientY-10+"px";
+    }
+    async function updateApp() 
+      {
+        fs.copyFile('index.html', 'index_backup.html', (err) => 
+        {
+          if (err) {console.error('Error copying file:', err);} 
+          else {console.log('File copied successfully!');}
+        });
+        let htmlText="<html>"+document.body.parentElement.innerHTML+"</html>";
+        fs.writeFileSync('update_test.html',textFinal) //change for distribution
+        console.log(text);
+        alert("Update complete. Restart the app to see changes");
+      }
+    console.log(document.body.parentElement.innerHTML);
+  </script>
+  <script src="./Sortable.js"></script>
+  <script>
+    example1 = document.getElementById('items'),
+    new Sortable(tabButtonss, {
+    animation: 200,
+    ghostClass: 'blue-background-class'
+  });
+  </script>
+</body>
+</html> 

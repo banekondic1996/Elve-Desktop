@@ -1,0 +1,346 @@
+<html lang="en" style="width:100%"><head>
+<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="test_files/Chart.js"></script>
+    <title>Transfer Dialog</title>
+    <style>
+        body{
+            width: 100%;
+        }
+        .fileManagerContainer{
+            display: block;
+            background: rgb(255 255 255 / 70%);
+            width: 400px;
+            height: auto;
+            border-radius: 12px;
+            user-select: none;
+            margin-top: 26px;
+            flex-direction: column;
+            flex-wrap: wrap;
+            padding: 0px;
+        }
+        .fileManagerButton{
+            display: flex;
+            background: rgb(248 125 166 / 44%);
+            border-radius: 12px;
+            width: 42px;    
+            height: 37px;
+            margin-bottom: 10px;
+            text-align: center;
+            justify-content: center;
+            align-items: center;
+            color:white;
+            margin: 2px;
+        }
+        .fileManagerButton img{
+            width: auto;
+            height: 22px;
+           /*  mix-blend-mode: overlay; */
+            opacity: 0.5;
+        }
+        .fileManagerFlexContainer{
+            display: flex;
+            flex-direction: row;
+            flex-wrap: nowrap;
+            padding: 7px;
+            justify-content: flex-start;
+            align-content: center;
+        }
+        .sliderContainer{
+            text-align: center;
+        }
+        .slider {
+        -webkit-appearance: none;
+        width: 100%;
+        height: 20px;
+        background: #d3d3d3;
+        outline: none;
+        -webkit-transition: .2s;
+        transition: opacity .2s;
+        margin: 10px;
+        border-radius: 10px;
+        }
+    
+        .slider:hover {
+        opacity: 1;
+        }
+         .sliderTrack{
+            -webkit-appearance: none;
+        appearance: none;
+        width: 15px;
+        height: 15px;
+        background: rgb(248 125 166 / 44%);;
+        cursor: pointer;
+        position: absolute;
+        border-radius: 10px;
+        margin: 13px;
+        z-index: 0;
+        pointer-events: none;
+        min-width: 10px;
+         }
+        .slider::-webkit-slider-thumb {
+        -webkit-appearance: none;
+        appearance: none;
+        width: 15px;
+        height: 15px;
+        background: #ff80db00;
+        cursor: pointer;
+        border-radius: 100%;
+        z-index:999;
+        }
+    
+        .slider::-moz-range-thumb {
+        width: 15px;
+        height: 15px;
+        background: #ff80db;
+        cursor: pointer;
+        z-index:999;
+        }
+        .fileManagerTrayContainer{
+            display: flex;
+            width: 98.5%;
+            height: calc(100% - 72px);
+            border-radius: 10px 10px 10px 10px;
+            align-content: center;
+            flex-wrap: nowrap;
+            justify-content: center;
+            position: relative;
+            contain: content;
+            margin:auto;
+        }
+        .sliderContainer img{
+            width: 22px;
+            height:22px;
+            opacity: 0.5;
+        }
+        .fileManagerTray{
+            display: flex;
+            width: 100%;
+            height: auto;
+            border-radius: 10px;
+            text-align: center;
+            flex-direction: row;
+            justify-content: space-around;
+            align-items: center;
+            color: white;
+            margin: 3px;
+            flex-wrap: nowrap;
+            contain:content;
+        }
+        .color{
+            background: rgb(255 47 47 / 80%);
+        }
+        .colorDarker{
+            background: rgba(193, 35, 35, 0.8);
+        }
+        .fileManagerTitle{
+            font-family: system-ui;
+            font-size: 90%;
+        }
+        .fileManagerDetails .fileManagerTitle{
+            margin-left: 10px;
+            margin-top: 6px;
+            margin-bottom: 0px;
+        }
+        .fileManagerDetails
+        {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            height: 90%;
+            width: auto;
+        }
+        .transferChart{
+            width:100%;
+            max-width:600px;
+            padding-top: 5px;
+        }
+        .hide{
+            display: none !important;
+        }
+        .WindowContainer{
+ /* display: none; */
+ display: flex;
+ width: 100%;
+ height: auto;
+ background: #c6c6c663;
+ /* position: absolute; */
+ border-radius: 14px;
+ backdrop-filter: blur(11px);
+ box-shadow: 0px 0px 20px 6px #00000038;
+ z-index: 999;
+ flex-direction: row;
+ padding: 7px;
+ justify-content: flex-start;
+ min-width: 472px;
+ margin: 4px;
+}
+/* .WindowBar{
+    background-color: #f0f0f099;
+    height: 32px;
+    width: 100%;
+}
+.WindowContent{
+    width: 100%;
+    height: 100%;
+    background:white;
+} */
+ .buttonsHolder{
+    right: 0px;
+    top: 5px;
+    position: absolute;
+    background: #27272745;
+    width: 81px;
+    height: 13px;
+    margin-inline-end: 5px;
+    border-radius: 18px;
+    padding: 5px;
+    top: 5px;
+    position: absolute;
+    background: #27272745;
+    width: 81px;
+    height: 13px;
+    margin-inline-end: 5px;
+    border-radius: 18px;
+    padding: 5px;
+ }
+ .windowButton{
+    position: absolute;
+    margin-inline-end: 5px;
+    width: 4px;
+    height: 4px;
+    aspect-ratio: 1/1;
+    border-radius: 100%;
+    padding: 5px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.windowButton:hover{
+    scale:1.2;
+}
+#detailsID{
+    width: auto;
+}
+</style></head>
+<body style="display: flex;width: 100%;flex-wrap: nowrap;margin: 0px;/* padding: 4px; */">
+    <div class="WindowContainer" style="">
+      <!--   <div class="WindowBar">
+            <div class="buttonsHolder" onclick="" style="display: flex;left: 10px;width: auto;flex-wrap: nowrap;flex-direction: row;
+            justify-content: center;align-items: center;color: white;-webkit-text-stroke-color: #dadada;max-width: 170px;">
+                <div style="display: flex;flex-direction: row;flex-wrap: nowrap;margin: auto;position: absolute;">This is Title</div>
+            </div>
+            <div class="buttonsHolder" onclick="" style="display: flex;left: 196px;width: auto;flex-wrap: nowrap;flex-direction: row;
+            justify-content: center;align-items: center;color: white;-webkit-text-stroke-color: #dadada;max-width: 170px;">
+                <div style="display: flex;flex-direction: row;flex-wrap: nowrap;margin: auto;position: absolute;">This is Title</div>
+            </div>
+            <div class="buttonsHolder" onclick="" style=""></div>
+            <div class="windowButton" onclick="" style="right: 69px;top: 9.5px;position: absolute;background: #c3c3c3;"></div>
+            <div class="windowButton" onclick="" style="right: 48px;top: 9.5px;background: #fff49b;"></div>
+            <div class="windowButton" onclick="" style="font-size: 7px;right: 27px;top: 9.5px;background: #cbff9b;"></div>
+            <div class="windowButton" onclick="" style="right: 6px;top: 9.5px;background: #ff9b9b;"></div>
+        </div> -->
+        
+        <div id="detailsID" class="fileManagerContainer color" style="margin-right: 10px;flex-direction: column;width: 272px;">
+            <div class="fileManagerTrayContainer" style="height: 100%;width: auto;flex-direction: column;">
+                <div class="fileManagerTray fileManagerDetails colorDarker" style="justify-content: flex-start;flex-direction: row;flex-wrap: wrap;padding: auto;flex-basis: content;"> 
+                    <li style="list-style-type: none;/*! background: #f75151; *//*! width: 94%; *//* text-align: left; *//*! border-radius: 12px; *//*! margin: 5px; *//*! width: 43px; *//*! list-style-type: ; */display: flex;flex-wrap: wrap;margin: auto;width: 150px;">
+                        <ul style="margin: auto;padding: auto;background: #f75151;/*! width: 94%; */text-align: left;border-radius: 12px;margin: 5px;width: 32px;display: flex;padding: 3px;text-align: center;">
+                            <img src="../icons/fileExplorer/home.png" style="width: 22px;filter: invert(1);opacity: 0.5;margin: auto;">
+                        </ul>
+                        <ul style="margin: auto;padding: auto;background: #f75151;/*! width: 94%; */text-align: left;border-radius: 12px;margin: 5px;width: 32px;display: flex;padding: 3px;text-align: center;">
+                            <img src="../icons/fileExplorer/computer.png" style="width: 22px;filter: invert(1);opacity: 0.5;margin: auto;">
+                        </ul>
+                        <ul style="margin: auto;padding: auto;background: #f75151;/*! width: 94%; */text-align: left;border-radius: 12px;margin: 5px;width: 32px;display: flex;padding: 3px;text-align: center;">
+                            <img style="width: 22px;filter: invert(1);opacity: 0.5;margin: auto;" src="../icons/fileExplorer/download.png">
+                        </ul>
+                        <ul style="margin: auto;padding: auto;background: #f75151;/*! width: 94%; */text-align: left;border-radius: 12px;margin: 5px;width: 32px;display: flex;padding: 3px;text-align: center;">
+                            <img style="width: 22px;filter: invert(1);opacity: 0.5;margin: auto;" src="../icons/fileExplorer/video.png">
+                        </ul>
+                        <ul style="margin: auto;padding: auto;background: #f75151;/*! width: 94%; */text-align: left;border-radius: 12px;margin: 5px;width: 32px;display: flex;padding: 3px;text-align: center;">
+                            <img style="width: 22px;filter: invert(1);opacity: 0.5;margin: auto;" src="../icons/fileExplorer/picture.png">
+                        </ul><ul style="margin: auto;padding: auto;background: #f75151;/*! width: 94%; */text-align: left;border-radius: 12px;margin: 5px;width: 32px;display: flex;padding: 3px;text-align: center;">
+                            <img style="width: 22px;filter: invert(1);opacity: 0.5;margin: auto;" src="../icons/fileExplorer/download.png">
+                        </ul>
+                    </li>
+                </div>
+            <div class="fileManagerTray fileManagerDetails colorDarker"> 
+                <p class="fileManagerTitle" id="transferNameID">File: </p>
+                <p class="fileManagerTitle" id="transferFromID">From: C:/Windows</p>
+                <p class="fileManagerTitle" id="transferToID">To: C:/User/Desktop</p>
+                <p class="fileManagerTitle" id="transferEstID">Est. Time: 1h 30min</p>
+                <p class="fileManagerTitle" id="transferTimeSpentID">Time spent: 1h 30min</p>
+                <p class="fileManagerTitle" id="transferRateID">Transfer rate: 900Mb/s</p>
+            </div>
+            <div class="fileManagerTray fileManagerDetails colorDarker" style="height: 250px;"> 
+                <p class="fileManagerTitle" id="transferNameID">File name: Chrome </p>
+                <p class="fileManagerTitle" id="transferFromID">File size: 200Mb</p>
+                <p class="fileManagerTitle" id="transferToID">Last modified: 02/03/1997 </p>
+                <p class="fileManagerTitle" id="transferEstID">Last accessed: 02/03/2024</p>
+                <p class="fileManagerTitle" id="transferTimeSpentID">Created on: 01/03/1997</p>
+                <p class="fileManagerTitle" id="transferRateID">File extension: .exe</p>
+            </div>
+        </div>  
+    </div>
+    
+    <div class="fileManagerContainer" style="width: 100%;">
+        <div class="fileManagerFlexContainer">
+            <div class="fileManagerButton color" style="width: 70px;">
+                <div style="text-wrap: nowrap;" onclick="displayDetails();">&lt;</div>
+            </div>
+            <div class="fileManagerButton color" style="width: 70px;">
+                <div id="fileManagerButtonID">&gt;</div>
+            </div>
+            <div class="fileManagerButton color" style="width: 100%;">
+                <input type="text" value="C:/windows/file/explorer" style="width: 100%;height: 29px;border-radius: 7px;border-color: white;border-style: solid;margin: auto;margin-inline: 4px;">
+            </div>
+            <div class="fileManagerButton color" style="width: auto;padding-inline: 5px;">
+                <div id="fileManagerButtonID" style="">Settings</div>
+            </div>
+            <div class="fileManagerButton color" style="width: auto;padding-inline: 5px;">
+                <div id="fileManagerButtonID">View</div>
+            </div>
+            <div class="fileManagerButton color" style="width: 40%;">
+                <input type="text" style="width: 100%;height: 29px;border-radius: 7px;border-color: white;border-style: solid;margin: auto;margin-inline: 4px;" placeholder="Search">
+            </div>
+        </div>
+            <div class="fileManagerTrayContainer color">
+                <div class="fileManagerTray colorDarker" style="">
+                    <img src="test_files/test2.PNG" alt="" style="/* mix-blend-mode: normal; */height: 100%;width: 100%;">
+                </div>
+            </div>
+    </div>
+</div>
+    
+        <script>
+          /*   var progressTextElemenet=document.getElementById("progressTextID");
+            var progressBarElement=document.getElementById('progressBarID');
+            function sliderTrackChange(el){
+                el.parentElement.children[0].style.width=((el.offsetWidth/100)*el.value)+'px';
+                progressTextElemenet.innerHTML=el.value+"%";
+            } */
+            function hexToRgbA(hex){
+                var c;
+                if(/^#([A-Fa-f0-9]{3}){1,2}$/.test(hex)){
+                    c= hex.substring(1).split('');
+                    if(c.length== 3){
+                        c= [c[0], c[0], c[1], c[1], c[2], c[2]];
+                    }
+                    c= '0x'+c.join('');
+                    color='rgba('+[(c>>16)&255, (c>>8)&255, c&255].join(',')+',0.8)';
+                    colorDarker='rgba('+[((c>>16)&255)*0.75, ((c>>8)&255)*0.75, (c&255)*0.75].join(',')+',0.8)';
+                    colorChange(color,colorDarker);
+                    return color+" "+colorDarker;
+                }
+                throw new Error('Bad Hex');
+            }
+            function colorChange(color,colorDarker){
+                styleElement[0].innerHTML=oldStyle;
+                var css = '.color{background-color: '+color+'} .colorDarker{background-color: '+colorDarker+'} .fileManagerButton.color:hover{ background-color: '+colorDarker+' }';
+                oldStyle=styleElement[0].innerHTML;
+                styleElement[0].innerHTML=oldStyle+css;
+                console.log(styleElement[0]);
+            }
+        </script>
+</body></html>
