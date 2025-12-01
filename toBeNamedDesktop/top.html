@@ -580,12 +580,12 @@
     </div>
 <!--    ---------Context menu END(change to tag menu in future)------------------ -->
 <!--    ---------Webviews START(change to tag and inject it in future)------------------ -->
-<webview id="transferDialogID" onmouseleave="" class="hide" allowtransparency allownw style="position: absolute;z-index: 10000;width: 1050px;height: 477px;bottom: 178;display: block;" partition="trusted" src="/transferDialog/transferDialog.html" type=""></webview>
+<webview id="transferDialogID" onmouseleave="" class="hide" allowtransparency allownw style="position: absolute;z-index: 10000;width: 1050px;height: 477px;bottom: 178;display: block;background: transparent;" partition="trusted" src="/transferDialog/transferDialog.html" type=""></webview>
 <webview id="appMenuID" onmouseenter="" onmouseleave="" class="hide" alwaysontop allowtransparency allownw style="position: absolute;z-index: 10000;width: 711px;height: 877px;left:600px;bottom:94px;display: block;" partition="trusted" src="/appMenu/appMenu.html" type=""></webview>
 <webview id="mediaCenterID" onmouseenter="mouseLeftObject.mediaCenter=false" onmouseleave="" class="hide" alwaysontop allowtransparency allownw style="position: absolute;z-index: 10000;width: 311px;height: 177px;left:600px;bottom:94px;display: block;" partition="trusted" src="/volumeControl/mediaCenter.html" type=""></webview>
 <webview id="calendarID" onmouseenter="mouseLeftObject.calendar=false" onmouseleave="mouseLeftObject.calendar=true" class="hide" allowtransparency allownw style="position: absolute;z-index: 10000;width: 311px;height: 460px;left:1200px;bottom:94px;display: block;" partition="trusted" src="/calendar/calendar.html" type=""></webview>
 <webview id="controlCenterID" onmouseenter="mouseLeftObject.controlCenter=false" onmouseleave="mouseLeftObject.controlCenter=true"  class="hide" allowtransparency allownw style="position: absolute;z-index: 10000;width: 350px;height: 410px;bottom: 75px;display: block;" partition="trusted" src="/controlCenter/controlCenter.html" type=""></webview>
-<webview id="sideBarID" onmouseenter="mouseLeftObject.sideBar=false" onmouseleave="mouseLeftObject.sideBar=true" class="hide" allowtransparency style="position: absolute;z-index: 10000;display: block;height: 427px;width:420px;height: calc(100% - 200px);right:2px;top:100px" partition="trusted" src="/edgy/edgy.html" type=""></webview>
+<webview id="sideBarID" onmouseenter="mouseLeftObject.sideBar=false" onmouseleave="mouseLeftObject.sideBar=true" class="hide" allowtransparency style="position: absolute;z-index: 10000;display: block;height: 427px;width:420px;height: calc(100% - 200px);right:2px;top:100px;background: transparent;" partition="trusted" src="/edgy/edgy.html" type=""></webview>
 <!--    ---------Webviews END(change to tag and inject it in future)------------------ -->
 <!--    ---------Bar START(add options to change orientation in future)------------------ -->
 <div id="barResizeID"></div>
@@ -664,7 +664,7 @@
 </div>  
 <!--    -----------------------Search END--------------------------------------------- --> 
 <!--    -----------------------Window TEST START--------------------------------------------- --> 
-<div id="windowContainerID">
+<div id="windowContainerID" class="opaque">
     <div id="resizersBoxID">
         <div class="resizer-corner" id="resizerTopLeftID" style="left: 0px;top: 0px;cursor: nw-resize;" onmousedown="resizeWindow(event)"></div>
         <div class="resizer-vertical" id="resizerTopID"  style="top: 0px;cursor: n-resize;" onmousedown="resizeWindow(event)"></div>       
@@ -1260,6 +1260,25 @@ nw.App.registerGlobalHotKey(shortcut);
     ghostClass: 'blue-background-class'
   }); */
   </script>
-<script src="mouse2.js"></script>
+  <script src="dom-x11-input-region.js"></script>
+<script>
+const native = require("./nw-input-region/build/Release/nw_input_region.node");
+let ctl;
+setTimeout(()=>{native.setPID(process.ppid);
+ctl = domRegion.start({
+    native: {
+      setInputRegion: rects => native.setInputRegion(rects)
+    },
+    selector: '*', // all elements
+    tileSize: 12,
+    minIntervalMs: 16,
+    pixelRatio: window.devicePixelRatio || 1,
+    maxRects: 800
+  });
+
+},4000);
+    
+</script>
+<!-- <script src="mouse2.js"></script> -->
 </body>
 </html>
